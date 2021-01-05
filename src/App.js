@@ -6,13 +6,13 @@ import {getTokenFromUrl} from './spotify'
 import SpotifyWebApi from "spotify-web-api-js";
 
 import {useSelector,useDispatch} from 'react-redux'
-import { setUser,setToken } from "./Redux/actions";
+import { setUser,setToken,setPlaylists,setDiscoverWeekly } from "./Redux/actions";
 
 const spotify = new SpotifyWebApi();
 
 function App() {
 
-  const {user,token} = useSelector(state => state)
+  const {user,token,playlists} = useSelector(state => state)
   const dispatch = useDispatch()
 
 
@@ -23,7 +23,6 @@ function App() {
       window.location.hash = ""    
       const _token = hash.access_token;
      if(_token){
-console.log('_token',_token)
       spotify.setAccessToken(_token);
         dispatch(setToken(_token))
        
@@ -31,19 +30,26 @@ console.log('_token',_token)
         spotify.getMe().then(user => {
           dispatch(setUser(user))
         })
+
+        spotify.getUserPlaylists().then(playlist =>{
+          dispatch(setPlaylists(playlist))
+        })  
+
+        // 37i9dQZEVXcGFTFK64psRl
+       spotify.getPlaylist('37i9dQZEVXcGFTFK64psRl').then(playlist=>{
+         dispatch(setDiscoverWeekly(playlist))
+       })
+        
      }
+
+    
     
     
   },[])
 
-  console.log('token',token);
-  console.log('user',user);
 
  
-  // spotify.getUserPlaylists().then(playlist =>{
-  //   console.log(playlist);
-  // })
-
+ 
 
 
   return (
